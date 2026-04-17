@@ -8,7 +8,7 @@
   --text: #ffffff;
   --muted: #888888;
   --green: #4ade80;
-  --radius: 17px;      
+  --radius: 18px;      
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
