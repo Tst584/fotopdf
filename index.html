@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FotoPDF — Free Photos to PDF Converter</title>
+<meta name="description" content="Convert photos to compressed PDF directly in your browser. Free, no file limits, no server uploads.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">Foto<span>PDF</span></div>
+    <div class="header-badge">✦ 100% FREE</div>
+  </div>
+</header>
+
+
+<div class="layout">
+
+  <main>
+
+    <div class="hero">
+      <h1>PHOTOS<br>TO <em>PDF</em><br>INSTANTLY</h1>
+      <p>Convert unlimited photos into a compressed PDF directly in your browser. 
+         No server uploads — everything happens locally.</p>
+      <div class="features-row">
+        <div class="feat"><div class="feat-icon">∞</div> Unlimited photos</div>
+        <div class="feat"><div class="feat-icon">🔒</div> Private</div>
+        <div class="feat"><div class="feat-icon">⚡</div> Instant</div>
+        <div class="feat"><div class="feat-icon">🗜</div> Max compression</div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-val" id="stat-count">0</div>
+        <div class="stat-label">Photos added</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="stat-size">0 MB</div>
+        <div class="stat-label">Total size</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="stat-pdf">—</div>
+        <div class="stat-label">PDF size</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="stat-ratio">—</div>
+        <div class="stat-label">Compression ratio</div>
+      </div>
+    </div>
+
+    <div class="dropzone-wrap" id="dropzone">
+      <input type="file" id="file-input" accept="image/*" multiple>
+      <span class="drop-icon">📸</span>
+      <div class="drop-title">Drag & drop photos here</div>
+      <div class="drop-sub">PNG, JPG, WEBP, HEIC — any quantity</div>
+      <button class="btn-pick" onclick="document.getElementById('file-input').click()">
+        ＋ Select Photos
+      </button>
+    </div>
+
+    <div class="controls-card">
+      <div class="field">
+        <label>Compression Quality</label>
+        <div class="range-wrap">
+          <input type="range" id="quality" min="5" max="95" value="40">
+          <div class="range-val" id="quality-val">40%</div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-top:6px;">
+          ← Smaller file &nbsp;|&nbsp; Better quality →
+        </div>
+      </div>
+      <div class="field">
+        <label>Page Size</label>
+        <select id="page-size">
+          <option value="a4">A4 (210×297 mm)</option>
+          <option value="a3">A3 (297×420 mm)</option>
+          <option value="letter">Letter (216×279 mm)</option>
+          <option value="fit">Fit to image</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Orientation</label>
+        <select id="orientation">
+          <option value="auto">Auto (by photo)</option>
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Max Width (px)</label>
+        <select id="max-width">
+          <option value="1920">1920 — High Quality</option>
+          <option value="1280" selected>1280 — Balanced</option>
+          <option value="800">800 — Smallest File</option>
+          <option value="0">No Resizing</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="preview-section">
+      <div class="section-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="section-title">PREVIEW</span>
+          <span class="count-badge" id="count-badge">0 photos</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-clear" onclick="document.getElementById('file-input').click()">＋ Add more</button>
+          <button class="btn-clear" id="btn-clear-all">✕ Clear all</button>
+        </div>
+      </div>
+      <div id="img-grid"></div>
+    </div>
+
+    <div class="convert-area" id="convert-area" style="display:none; margin-top:20px;">
+      <button class="btn-convert" id="btn-convert">
+        <span>🗜</span> CONVERT TO PDF
+      </button>
+    </div>
+
+    <div id="progress-wrap">
+      <div class="progress-label" id="progress-label">Initializing...</div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-phases">
+        <span id="phase-compress">1. Compressing images</span>
+        <span id="phase-pdf">2. Generating PDF</span>
+      </div>
+    </div>
+
+    <div id="success-box">
+      <h3>✓ PDF READY!</h3>
+      <p id="success-info">File created successfully</p>
+      <a id="download-link" href="#" download="fotopdf.pdf" class="btn-download">
+        ⬇ Download PDF
+      </a>
+      <div style="margin-top:14px;">
+        <button class="btn-clear" id="btn-new">Convert more</button>
+      </div>
+    </div>
+
+    <div style="margin-top:36px; padding-top:28px; border-top:1px solid var(--border);">
+      <div class="section-title" style="margin-bottom:16px;">HOW IT WORKS</div>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-icon">📸</div>
+          <div class="how-title">1. Add Photos</div>
+          <div class="how-desc">Any quantity. Drag and drop or click to upload.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-icon">⚙️</div>
+          <div class="how-title">2. Adjust Settings</div>
+          <div class="how-desc">Select compression quality and page size.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-icon">🗜</div>
+          <div class="how-title">3. Convert</div>
+          <div class="how-desc">Click the button — your PDF is ready in seconds.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-icon">⬇</div>
+          <div class="how-title">4. Download</div>
+          <div class="how-desc">The compressed PDF is saved directly to your device.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <aside class="sidebar">
+
+
+    <div class="info-card">
+      <h3>Benefits</h3>
+      <ul class="info-list">
+        <li><span>🔒</span><span>Photos are NOT uploaded to servers — processed locally in your browser</span></li>
+        <li><span>∞</span><span>No limits — convert 1000+ photos at once</span></li>
+        <li><span>🗜</span><span>Up to 90% smaller files thanks to JPEG compression</span></li>
+        <li><span>📱</span><span>Works on mobile and tablet</span></li>
+        <li><span>🆓</span><span>Completely free, forever</span></li>
+      </ul>
+    </div>
+
+<footer>
+  <p>© 2026 FotoPDF — Conversion happens in your browser. Your files are never sent anywhere.</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
